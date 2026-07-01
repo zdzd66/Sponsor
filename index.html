@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>✨ 赞助通道 ✨</title>
+    <style>
+        /* ===== 全局重置 & 字体 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a0a0f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, system-ui, sans-serif;
+            overflow: hidden;
+            cursor: default;
+            user-select: none;
+        }
+
+        /* ===== 画布：粒子背景 ===== */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ===== 动态光晕 ===== */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            z-index: 0;
+            pointer-events: none;
+            animation: orbFloat 12s ease-in-out infinite alternate;
+        }
+        .glow-orb:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: #ff00aa;
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+        .glow-orb:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: #00d4ff;
+            bottom: -80px;
+            right: -80px;
+            animation-delay: -4s;
+        }
+        .glow-orb:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            background: #a855f7;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -8s;
+            opacity: 0.3;
+        }
+
+        @keyframes orbFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(60px, -40px) scale(1.2);
+            }
+            66% {
+                transform: translate(-30px, 50px) scale(0.9);
+            }
+            100% {
+                transform: translate(40px, -20px) scale(1.1);
+            }
+        }
+
+        /* ===== 主卡片 ===== */
+        .card {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(24px) saturate(1.4);
+            -webkit-backdrop-filter: blur(24px) saturate(1.4);
+            border-radius: 48px;
+            padding: 50px 44px 44px;
+            max-width: 480px;
+            width: 92%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            transition: transform 0.3s ease, box-shadow 0.4s ease;
+            animation: cardEnter 1s cubic-bezier(0.23, 1, 0.32, 1) both;
+        }
+
+        .card:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 40px 100px rgba(168, 85, 247, 0.25);
+        }
+
+        @keyframes cardEnter {
+            0% {
+                opacity: 0;
+                transform: scale(0.92) translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* ===== 标题 ===== */
+        .title {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #f472b6, #a855f7, #60a5fa, #f472b6);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerText 4s ease-in-out infinite;
+            margin-bottom: 8px;
+        }
+
+        @keyframes shimmerText {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            letter-spacing: 4px;
+            margin-bottom: 28px;
+            font-weight: 300;
+            text-transform: uppercase;
+        }
+
+        /* ===== 二维码容器 — 玻璃质感 ===== */
+        .qr-wrapper {
+            position: relative;
+            margin: 16px auto 28px;
+            width: 280px;
+            height: 280px;
+            border-radius: 32px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.6),
+                inset 0 0 80px rgba(168, 85, 247, 0.06);
+            transition: all 0.4s ease;
+            animation: qrFloat 3.5s ease-in-out infinite;
+        }
+
+        .qr-wrapper:hover {
+            border-color: rgba(168, 85, 247, 0.4);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.6),
+                0 0 60px rgba(168, 85, 247, 0.15),
+                inset 0 0 80px rgba(168, 85, 247, 0.08);
+            transform: scale(1.02);
+        }
+
+        @keyframes qrFloat {
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .qr-wrapper img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            object-fit: contain;
+            background: #ffffff;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            transition: filter 0.3s ease;
+        }
+
+        .qr-wrapper:hover img {
+            filter: brightness(1.04) drop-shadow(0 0 20px rgba(168, 85, 247, 0.3));
+        }
+
+        /* ===== 光晕扫光 ===== */
+        .qr-wrapper::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.08), transparent 70%);
+            pointer-events: none;
+            border-radius: 32px;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .qr-wrapper:hover::after {
+            opacity: 1;
+        }
+
+        /* ===== 提示文字 ===== */
+        .hint {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 13px;
+            letter-spacing: 2px;
+            font-weight: 300;
+            margin-top: 6px;
+        }
+
+        .hint span {
+            display: inline-block;
+            animation: pulseDot 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(0.9);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* ===== 底部装饰线 ===== */
+        .footer-line {
+            margin-top: 28px;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.5), transparent);
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 4px;
+        }
+
+        /* ===== 鼠标跟随光效 (JS控制) ===== */
+        #mouseGlow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.08), transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 520px) {
+            .card {
+                padding: 32px 20px 30px;
+                border-radius: 32px;
+            }
+            .qr-wrapper {
+                width: 200px;
+                height: 200px;
+                padding: 12px;
+            }
+            .title {
+                font-size: 20px;
+            }
+            .subtitle {
+                font-size: 11px;
+                letter-spacing: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 动态光晕 ===== -->
+    <div class="glow-orb"></div>
+    <div class="glow-orb"></div>
+    <div class="glow-orb"></div>
+
+    <!-- ===== 粒子画布 ===== -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- ===== 鼠标跟随光效 ===== -->
+    <div id="mouseGlow"></div>
+
+    <!-- ===== 主卡片 ===== -->
+    <div class="card">
+        <div class="title">✦ 赞助支持 ✦</div>
+        <div class="subtitle">— 你的鼓励，我的动力 —</div>
+
+        <!-- 二维码图片：路径已经配好，直接用相对路径，跟HTML在同一目录 -->
+        <div class="qr-wrapper">
+            <img
+            src="Sponsor.jpg"
+            alt="赞助二维码 - 感谢支持"
+            id="qrImage"
+            />
+        </div>
+
+        <div class="hint">
+            <span>⬇</span>&nbsp; 扫一扫，支持创作者 &nbsp;<span>⬇</span>
+        </div>
+        <div class="footer-line"></div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  1. 鼠标跟随光效
+        // ============================================================
+        const mouseGlow = document.getElementById('mouseGlow');
+        let glowTimeout;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseGlow.style.left = e.clientX + 'px';
+            mouseGlow.style.top = e.clientY + 'px';
+            mouseGlow.style.opacity = '1';
+            clearTimeout(glowTimeout);
+            glowTimeout = setTimeout(() => {
+                mouseGlow.style.opacity = '0';
+            }, 800);
+        });
+
+        // ============================================================
+        //  2. 粒子星空背景 (Canvas)
+        // ============================================================
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const PARTICLE_COUNT = 150;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.6;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.6 + 0.15;
+                const hue = 270 + Math.random() * 60;
+                this.color = `hsla(${hue}, 80%, 70%, ${this.opacity})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.shadowColor = 'rgba(168,85,247,0.3)';
+                ctx.shadowBlur = 12;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push(new Particle());
+        }
+
+        function drawLines() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        const alpha = (1 - dist / 150) * 0.25;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(168, 85, 247, ${alpha})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p) => {
+                p.update();
+                p.draw();
+            });
+            drawLines();
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // ============================================================
+        //  3. 点击烟花效果
+        // ============================================================
+        document.addEventListener('click', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            createExplosion(x, y);
+        });
+
+        function createExplosion(cx, cy) {
+            const colors = ['#f472b6', '#a855f7', '#60a5fa', '#34d399', '#fbbf24', '#fb7185', '#c084fc'];
+            const count = 60;
+
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('div');
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 80 + Math.random() * 200;
+                const size = 4 + Math.random() * 10;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+
+                const dx = Math.cos(angle) * velocity;
+                const dy = Math.sin(angle) * velocity;
+
+                el.style.cssText = `
+                            position: fixed;
+                            left: ${cx}px;
+                            top: ${cy}px;
+                            width: ${size}px;
+                            height: ${size}px;
+                            border-radius: 50%;
+                            background: ${color};
+                            pointer-events: none;
+                            z-index: 9999;
+                            box-shadow: 0 0 ${size + 6}px ${color};
+                            will-change: transform, opacity;
+                            transition: none;
+                        `;
+                document.body.appendChild(el);
+
+                let xPos = cx,
+                    yPos = cy;
+                let vx = dx,
+                    vy = dy;
+                let gravity = 0.08;
+                let life = 1.0;
+                const decay = 0.008 + Math.random() * 0.012;
+
+                function fly() {
+                    vx *= 0.99;
+                    vy += gravity;
+                    xPos += vx * 0.016;
+                    yPos += vy * 0.016;
+                    life -= decay;
+
+                    if (life <= 0) {
+                        el.remove();
+                        return;
+                    }
+
+                    const s = size * (0.3 + life * 0.7);
+                    el.style.left = xPos + 'px';
+                    el.style.top = yPos + 'px';
+                    el.style.width = s + 'px';
+                    el.style.height = s + 'px';
+                    el.style.opacity = life * 0.9;
+                    el.style.boxShadow = `0 0 ${s + 8}px ${color}`;
+
+                    requestAnimationFrame(fly);
+                }
+                fly();
+            }
+        }
+
+        // ============================================================
+        //  4. 图片加载失败时提示
+        // ============================================================
+        const img = document.getElementById('qrImage');
+        img.addEventListener('error', function() {
+            this.style.display = 'none';
+            const wrapper = this.parentElement;
+            const fallback = document.createElement('div');
+            fallback.style.cssText = `
+                        width: 100%; height: 100%;
+                        display: flex; align-items: center; justify-content: center;
+                        background: #1a1a2e; border-radius: 20px;
+                        color: rgba(255,255,255,0.4); font-size: 14px;
+                        text-align: center; padding: 20px;
+                        border: 2px dashed rgba(168,85,247,0.2);
+                    `;
+            fallback.innerHTML = '⚠️ 图片未找到<br><span style="font-size:12px;opacity:0.5;">请确保 Sponsor.jpg 和本HTML在同一目录</span>';
+            wrapper.appendChild(fallback);
+        });
+
+        console.log('✨ 华丽赞助页面已加载 ✨');
+        console.log('💡 点击页面任意位置触发烟花特效！');
+        console.log('📁 图片路径: Sponsor.jpg (同目录)');
+    </script>
+
+</body>
+</html>
